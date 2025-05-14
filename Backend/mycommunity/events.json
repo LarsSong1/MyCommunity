@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Futbol barrial",
+    "description": "adasdsadasdasdasdasdasdasdasdasdasdasdasdasdasdasd",
+    "dateForm": "2025-05-16T05:00:00.000Z",
+    "hour": "00:33",
+    "location": "Cancha UNEMI",
+    "address": "UNEMI",
+    "organizer": "Jair Alejandro",
+    "email": "jairgavilanezcell@gmail.com",
+    "phone": "+5930967470880",
+    "category": "social",
+    "capacity": "4000",
+    "freeState": true,
+    "outstanding": true
+  },
+  {
+    "name": "Hackaton",
+    "description": "adasdsadasdasdasdasdasdsadada",
+    "dateForm": "2025-05-15T05:00:00.000Z",
+    "hour": "00:52",
+    "location": "Laboratorio UNEMI",
+    "address": "ASDASDASDASDASDA",
+    "organizer": "Jair Alejandro",
+    "email": "jairgavilanezcell@gmail.com",
+    "phone": "+5930967470880",
+    "category": "educativo",
+    "capacity": "100",
+    "freeState": true,
+    "outstanding": false
+  },
+  {
+    "name": "sdasdasdasdasd",
+    "description": "bbubuubuiniooomomoomom",
+    "dateForm": "2025-05-15T05:00:00.000Z",
+    "hour": "00:23",
+    "location": "Cancha UNEMI",
+    "address": "asdasdasdasdasda",
+    "organizer": "sdasdasda",
+    "email": "jairgavilanezcell@gmail.com",
+    "phone": "+5930967470880",
+    "category": "deportivo",
+    "capacity": "20",
+    "freeState": false,
+    "outstanding": true
+  }
+]

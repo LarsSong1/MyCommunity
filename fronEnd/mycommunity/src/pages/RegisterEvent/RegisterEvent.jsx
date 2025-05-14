@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+// Dependencias Generales
+import axios from 'axios'
+
 // Dependencias de Notifiaciones
 import { toast } from 'sonner'
 
@@ -32,60 +35,63 @@ import { es } from "date-fns/locale"
 
 
 const formSchema = z.object({
-  nombre: z.string().min(5, { message: "El nombre debe tener al menos 5 caracteres" }),
-  descripcion: z.string().min(20, { message: "La descripción debe tener al menos 20 caracteres" }),
-  fecha: z.date({ required_error: "La fecha es requerida" }),
-  hora: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "Formato de hora inválido (HH:MM)" }),
-  ubicacion: z.string().min(5, { message: "La ubicación debe tener al menos 5 caracteres" }),
-  direccion: z.string().min(5, { message: "La dirección debe tener al menos 5 caracteres" }),
-  organizador: z.string().min(3, { message: "El organizador debe tener al menos 3 caracteres" }),
-  contacto: z.string().email({ message: "Correo electrónico inválido" }),
-  telefono: z.string().regex(/^\+?[0-9]{8,15}$/, { message: "Número de teléfono inválido" }),
-  categoria: z.string({ required_error: "Seleccione una categoría" }),
-  aforo: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+  name: z.string().min(5, { message: "El nombre debe tener al menos 5 caracteres" }),
+  description: z.string().min(20, { message: "La descripción debe tener al menos 20 caracteres" }),
+  dateForm: z.date({ required_error: "La fecha es requerida" }),
+  hour: z.string().regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "Formato de hora inválido (HH:MM)" }),
+  location: z.string().min(5, { message: "La ubicación debe tener al menos 5 caracteres" }),
+  address: z.string().min(5, { message: "La dirección debe tener al menos 5 caracteres" }),
+  organizer: z.string().min(3, { message: "El organizador debe tener al menos 3 caracteres" }),
+  email: z.string().email({ message: "Correo electrónico inválido" }),
+  phone: z.string().regex(/^\+?[0-9]{8,15}$/, { message: "Número de teléfono inválido" }),
+  category: z.string({ required_error: "Seleccione una categoría" }),
+  capacity: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: "El aforo debe ser un número positivo",
   }),
-  gratuito: z.boolean().default(false),
-  destacado: z.boolean().default(false),
+  freeState: z.boolean().default(false),
+  outstanding: z.boolean().default(false),
 })
 
 const RegisterEvent = () => {
-  const [date, setDate] = useState()
+  const [date, setDate] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nombre: "",
-      descripcion: "",
-      ubicacion: "",
-      direccion: "",
-      organizador: "",
-      contacto: "",
-      telefono: "",
-      hora: "",
-      aforo: "",
-      gratuito: false,
-      destacado: false,
+      name: "",
+      description: "",
+      location: "",
+      address: "",
+      organizer: "",
+      email: "",
+      phone: "",
+      hour: "",
+      capacity: "",
+      freeState: false,
+      outstanding: false,
     },
   })
 
-  function onSubmit(data) {
+  async function onSubmit(data) {
     // Aquí iría la lógica para enviar los datos al servidor
-    console.log(data)
-    toast({
-      title: "Evento registrado correctamente",
-      description: "Tu evento ha sido registrado y está pendiente de aprobación.",
-    })
+    try {
+      console.log(data)
+      const response = await axios.post('http://localhost:3000/registros', data)
+      toast.success("Evento registrado correctamente. Tu evento ha sido registrado");
+    } catch (err) {
+      toast.error('Ocurrio un error al intentar crear el evento')
+      console.error(err)
+    }
   }
 
 
   return (
     <div className="container mx-auto py-10">
-      <div className="mb-6">
-        <Link to="/lista" className="flex items-center text-muted-foreground hover:text-foreground">
-          <ChevronLeftIcon className="mr-1 h-4 w-4" />
-          Volver al listado
+      <div className='flex justify-start items-center gap-2'>
+        <Link to={'/lista'} className='bg-green-300 px-2 py-1 rounded-md'>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16" /><path d="M2 12H22" /></svg>
         </Link>
+        <p className='font-light'>Volver a Listado</p>
       </div>
 
       <Card className="max-w-3xl mx-auto">
@@ -101,7 +107,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="nombre"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nombre del evento *</FormLabel>
@@ -115,7 +121,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="descripcion"
+                  name="description"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Descripción *</FormLabel>
@@ -134,7 +140,7 @@ const RegisterEvent = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="fecha"
+                    name="dateForm"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel>Fecha *</FormLabel>
@@ -174,7 +180,7 @@ const RegisterEvent = () => {
 
                   <FormField
                     control={form.control}
-                    name="hora"
+                    name="hour"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Hora *</FormLabel>
@@ -189,7 +195,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="categoria"
+                  name="category"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Categoría *</FormLabel>
@@ -217,7 +223,7 @@ const RegisterEvent = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="aforo"
+                    name="capacity"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Aforo máximo *</FormLabel>
@@ -233,7 +239,7 @@ const RegisterEvent = () => {
                   <div className="flex flex-col space-y-4 justify-end">
                     <FormField
                       control={form.control}
-                      name="gratuito"
+                      name="freeState"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                           <FormControl>
@@ -255,7 +261,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="ubicacion"
+                  name="location"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Lugar *</FormLabel>
@@ -269,7 +275,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="direccion"
+                  name="address"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Dirección *</FormLabel>
@@ -287,7 +293,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="organizador"
+                  name="organizer"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nombre del organizador *</FormLabel>
@@ -302,7 +308,7 @@ const RegisterEvent = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="contacto"
+                    name="email"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Correo electrónico *</FormLabel>
@@ -316,7 +322,7 @@ const RegisterEvent = () => {
 
                   <FormField
                     control={form.control}
-                    name="telefono"
+                    name="phone"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Teléfono de contacto *</FormLabel>
@@ -331,7 +337,7 @@ const RegisterEvent = () => {
 
                 <FormField
                   control={form.control}
-                  name="destacado"
+                  name="outstanding"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                       <FormControl>

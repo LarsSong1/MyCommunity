@@ -1,11 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Link } from 'react-router-dom'
 import { CalendarIcon, MapPinIcon, UsersIcon } from "lucide-react"
 import myComIcon from '../../assets/img/myComIcon.svg'
-import myComImage from  '../../assets/img/myComImage.svg'
+import myComImage from '../../assets/img/myComImage.svg'
+import axios from 'axios'
 
 const Home = () => {
+  const [outstandingEvents, setOutStandingEvents] = useState([])
+
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/registros')
+        const filteredEvents = response.data.filter(event => event.outstanding)
+        setOutStandingEvents(filteredEvents)
+      } catch (err) {
+        console.error('Error al obtener los datos del servidor')
+      }
+
+    }
+
+
+    fetchEvents()
+  },[])
+
+  console.log("eventos destacados", outstandingEvents)
+
+
   return (
     <div className="container mx-auto py-10">
       <header className="mb-10 text-center">
@@ -27,8 +50,8 @@ const Home = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <Link to={`/eventos/${i}`} key={i} className="block group">
+          {outstandingEvents.map((data,i) => (
+            <div key={i} className="block group">
               <div className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow transition-all hover:shadow-md">
                 <div className="relative h-48 w-full bg-muted">
                   <img
@@ -42,25 +65,25 @@ const Home = () => {
                 </div>
                 <div className="p-4">
                   <h3 className="text-xl font-semibold group-hover:text-primary transition-colors">
-                    Evento Comunitario {i}
+                    {data.name}
                   </h3>
                   <div className="mt-2 space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      <span>15 de Mayo, 2025 - 18:00</span>
+                      <span>{data.dateForm}</span>
                     </div>
                     <div className="flex items-center">
                       <MapPinIcon className="mr-2 h-4 w-4" />
-                      <span>Centro Comunitario Local</span>
+                      <span>{data.location}</span>
                     </div>
                     <div className="flex items-center">
                       <UsersIcon className="mr-2 h-4 w-4" />
-                      <span>Organizado por: Asociación Vecinal</span>
+                      <span>Organizado por: {data.organizer}</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
